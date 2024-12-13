@@ -103,10 +103,10 @@ def main():
     # ]
 
     models = [
+        ("allenai/OLMo-1B-0724-hf", ["step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B", "main"]),
         ("google/gemma-2-2b"),
         ("google/gemma-2-9b"),
         ("google/gemma-2-27b"),
-        ("allenai/OLMo-1B-0724-hf", ["step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B", "main"]),
         ("allenai/OLMo-7B-0724-hf", ["step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B", "main"]),
         ("EleutherAI/pythia-160m-deduped"),
         ("EleutherAI/pythia-160m-deduped"),
@@ -132,7 +132,8 @@ def main():
     task_manager = TaskManager("INFO", include_path=None)
 
     for model_tup in models:
-        if len(model_tup)==1:
+        print(model_tup)
+        if isinstance(model_tup, str):
             model = model_tup[0]
             print(
                 f"starting {model}"
@@ -165,9 +166,13 @@ def main():
             )
 
             if results is not None:
+                new_results = {}
+                new_results["results"] = results['results']
+                new_results["groups"] = results["groups"]
+                new_results["group_subtasks"] = results["group_subtasks"]
                 model_string = model.split("/")[1]
                 with open(f"results/{model_string}.json", 'w') as f:
-                    json.dump(results, f)
+                    json.dump(new_results, f)
 
             print(
                 f"{model} done"
@@ -207,9 +212,13 @@ def main():
                     )
 
                 if results is not None:
+                    new_results = {}
+                    new_results["results"] = results['results']
+                    new_results["groups"] = results["groups"]
+                    new_results["group_subtasks"] = results["group_subtasks"]
                     model_string = model.split("/")[1]
-                    with open(f"results/{model_string}-{revision}.json", 'w') as f:
-                        json.dump(results, f)
+                    with open(f"results/{model_string}_{revision}.json", 'w') as f:
+                        json.dump(new_results, f)
 
                 print(
                     f"{model}, {revision} done"
