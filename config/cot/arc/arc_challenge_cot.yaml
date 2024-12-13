@@ -1,0 +1,40 @@
+tag:
+  - ai2_arc
+dataset_path: allenai/ai2_arc
+task: arc_challenge_cot
+dataset_name: ARC-Challenge
+output_type: generate_until
+training_split: train
+validation_split: validation
+test_split: test
+doc_to_text: "{{question}}\nChoose the best continuation:\n\n(A) {{choices.text[0]}}\n(B) {{choices.text[1]}}\n(C) {{choices.text[2]}}\n(D) {{choices.text[3]}}\nLet's think step by step."
+doc_to_target: "{{['(A)', '(B)', '(C)', '(D)'][choices.label.index(answerKey)]}}"
+generation_kwargs:
+  until:
+    - "</s>"
+    - "\n"
+    - "<|im_end|>"
+  do_sample: false
+  temperature: 0.5
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "regex"
+        regex_pattern: "((?<=The answer is )(.*)(?=.)|(?<=answer is )(.*)(?=.)|(?<=The answer: )(.*)(?=.)|(?<=The final answer: )(.*)(?=.))"
+      - function: "take_first"
+  - name: "flexible-extract"
+    filter:
+      - function: "multi_choice_regex"
+        group_select: -1
+        ignore_case: true
+        ignore_punctuation: true
+        regex_pattern: "(\\([A-Z]\\))"
+      - function: "take_first"
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 1.0
+
+

@@ -102,27 +102,27 @@ def main():
         # ("meta-llama/Llama-3.1-8B"),
         # ("meta-llama/Llama-3.1-70B"),
     models = [
-        #("allenai/OLMo-1B-0724-hf", ["step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B", "main"]),
-        #("google/gemma-2-2b"),
-        #("google/gemma-2-9b"),
         ("EleutherAI/pythia-160m-deduped"),        
         ("EleutherAI/pythia-410m-deduped"),
-        ("EleutherAI/pythia-1b-deduped"),
-        ("EleutherAI/pythia-1.4b-deduped"),
-        ("EleutherAI/pythia-2.8b-deduped"),
-        ("EleutherAI/pythia-6.9b-deduped"),
-        ("EleutherAI/pythia-12b-deduped"),
-        ("allenai/OLMo-7B-0724-hf", ["step2500-tokens10B", "step24000-tokens100B", "step239000-tokens1002B", "step477000-tokens2000B", "main"]),
         ("Qwen/Qwen2.5-0.5B"),
+        ("meta-llama/Llama-3.2-1B"),
+        ("EleutherAI/pythia-1b-deduped"),
+        ("allenai/OLMo-1B-0724-hf", ["main", "step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B"]),
+        ("google/gemma-2-2b"),
+        ("EleutherAI/pythia-1.4b-deduped"),
         ("Qwen/Qwen2.5-1.5B"),
         ("Qwen/Qwen2.5-3B"),
-        ("Qwen/Qwen2.5-7B"),
-        ("Qwen/Qwen2.5-14B"),
-        ("meta-llama/Llama-3.2-1B"),
         ("meta-llama/Llama-3.2-3B"),
+        ("google/gemma-2-9b"),
+        ("EleutherAI/pythia-2.8b-deduped"),
+        ("EleutherAI/pythia-6.9b-deduped"),
+        ("Qwen/Qwen2.5-7B"),
+        ("allenai/OLMo-7B-0724-hf", ["main", "step2500-tokens10B", "step24000-tokens100B", "step239000-tokens1002B", "step477000-tokens2000B"]),
+        ("EleutherAI/pythia-12b-deduped"),
+        ("Qwen/Qwen2.5-14B"),
     ]
 
-    beam_config = GenerationConfig(num_beams=4, no_repeat_ngram_size=2, early_stopping=True, top_k=50 top_p=0.9)
+    beam_config = "num_beams=4,no_repeat_ngram_size=2,early_stopping=True,top_k=50,top_p=0.9"
 
     tasks = ["mmlu", "hellaswag", "xwinograd", "winogrande", 
                 "truthfulqa_mc1", "arc_challenge", "gsm8k"]
@@ -141,10 +141,10 @@ def main():
                 "truthfulqa_mc1", "arc_challenge", "gsm8k_cot_sc_new"] #CHANGE
         elif opt=="cot":
             #chain of thought
-            task_manager = TaskManager("INFO", include_path=None) #CHANGE
+            task_manager = TaskManager("INFO", include_path="/home/ubuntu/obs-scaling-inference-opts/config/cot/")
             #tasks = ["mmlu", "hellaswag", "xwinograd", "winogrande", 
                # "truthfulqa_mc1", "arc_challenge", "gsm8k"] #CHANGE
-            tasks = ["hellaswag_cot"]
+            tasks = ["hellaswag_cot", "arc_challenge_cot", "truthfulqa_cot", "xwinograd_cot", "winogrande_cot", "gsm8k_cot_zeroshot", "mmlu_flan_cot_zeroshot"] 
         for model_tup in models:
             print(model_tup)
             if isinstance(model_tup, str):
