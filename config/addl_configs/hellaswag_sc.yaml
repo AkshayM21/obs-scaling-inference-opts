@@ -1,0 +1,33 @@
+tag:
+  - multiple_choice
+task: hellaswag_sc
+dataset_path: hellaswag
+dataset_name: null
+output_type: multiple_choice
+training_split: train
+validation_split: validation
+test_split: null
+process_docs: !function utils.process_docs
+doc_to_text: "{{query}}. Let's think step by step."
+doc_to_target: "{{label}}"
+doc_to_choice: "choices"
+metric_list:
+  - metric: acc
+    aggregation: mean
+    higher_is_better: true
+  - metric: acc_norm
+    aggregation: mean
+    higher_is_better: true
+generation_kwargs:
+  do_sample: true
+  temperature: 0.6
+repeats: 4
+filter_list:
+  - name: "maj@4"
+    filter:
+      - function: "majority_vote"
+      - function: "take_first"
+metadata:
+  version: 1.0
+dataset_kwargs:
+  trust_remote_code: true

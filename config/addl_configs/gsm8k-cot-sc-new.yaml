@@ -1,0 +1,21 @@
+include: gsm8k-cot-zeroshot.yaml
+tag:
+  - chain_of_thought
+  - self_consistency
+task: gsm8k_cot_sc_new
+generation_kwargs:
+  until:
+    - "Q:"
+    - "\n\n"
+  do_sample: true
+  temperature: 0.6
+repeats: 4
+filter_list:
+  - name: "maj@4"
+    filter:
+      - function: "regex"
+        regex_pattern: "The answer is (\\-?[0-9\\.\\,]*[0-9]+)"
+      - function: "majority_vote"
+      - function: "take_first"
+metadata:
+  version: 2.0
