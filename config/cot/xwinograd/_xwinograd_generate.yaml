@@ -1,0 +1,14 @@
+group: xwinograd_generate
+task:
+  - xwinograd_generate_en
+  - xwinograd_generate_fr
+  - xwinograd_generate_jp
+  - xwinograd_generate_pt
+  - xwinograd_generate_ru
+  - xwinograd_generate_zh
+aggregate_metric_list:
+  - aggregation: mean
+    metric: exact_match
+    weight_by_size: True
+metadata:
+  version: 1.0

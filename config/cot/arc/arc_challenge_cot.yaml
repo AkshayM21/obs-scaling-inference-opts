@@ -7,14 +7,14 @@ output_type: generate_until
 training_split: train
 validation_split: validation
 test_split: test
-doc_to_text: "{{question}}\nChoose the best continuation:\n\n(A) {{choices.text[0]}}\n(B) {{choices.text[1]}}\n(C) {{choices.text[2]}}\n(D) {{choices.text[3]}}\nLet's think step by step."
-doc_to_target: "{{['(A)', '(B)', '(C)', '(D)'][choices.label.index(answerKey)]}}"
+doc_to_text: !function util.doc_to_text_cot
+doc_to_target: "({{answerKey}})"
 generation_kwargs:
   until:
     - "</s>"
     - "\n"
     - "<|im_end|>"
-  do_sample: false
+  do_sample: true
   temperature: 0.5
 filter_list:
   - name: "strict-match"
@@ -24,10 +24,8 @@ filter_list:
       - function: "take_first"
   - name: "flexible-extract"
     filter:
-      - function: "multi_choice_regex"
+      - function: "regex"
         group_select: -1
-        ignore_case: true
-        ignore_punctuation: true
         regex_pattern: "(\\([A-Z]\\))"
       - function: "take_first"
 metric_list:

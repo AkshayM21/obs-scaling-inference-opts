@@ -1,0 +1,14 @@
+group: xwinograd_cot
+task:
+  - xwinograd_cot_en
+  - xwinograd_cot_fr
+  - xwinograd_cot_jp
+  - xwinograd_cot_pt
+  - xwinograd_cot_ru
+  - xwinograd_cot_zh
+aggregate_metric_list:
+  - aggregation: mean
+    metric: exact_match
+    weight_by_size: True
+metadata:
+  version: 1.0
