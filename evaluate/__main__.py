@@ -103,7 +103,7 @@ def main():
     # ]
 
     models = [
-        ("allenai/OLMo-1B-0724-hf", ["step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B", "main"]),
+        #("allenai/OLMo-1B-0724-hf", ["step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B", "main"]),
         ("google/gemma-2-2b"),
         ("google/gemma-2-9b"),
         ("google/gemma-2-27b"),
@@ -134,7 +134,7 @@ def main():
     for model_tup in models:
         print(model_tup)
         if isinstance(model_tup, str):
-            model = model_tup[0]
+            model = model_tup
             print(
                 f"starting {model}"
             )
