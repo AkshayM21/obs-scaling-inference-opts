@@ -12,7 +12,7 @@ generation_kwargs:
     - "\n"
     - "<|im_end|>"
   do_sample: true
-  temperature: 0.5
+  temperature: 0.7
 filter_list:
   - name: "strict-match"
     filter:

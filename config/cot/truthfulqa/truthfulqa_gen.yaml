@@ -8,6 +8,9 @@ test_split: null
 num_fewshot: 0
 doc_to_text: !function util.doc_to_text_gen
 doc_to_target: !function util.doc_to_target
+generation_kwargs:
+  do_sample: true
+  temperature: 0.7
 metric_list:
   - metric: exact_match
     aggregation: mean

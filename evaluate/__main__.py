@@ -102,27 +102,27 @@ def main():
         # ("meta-llama/Llama-3.1-8B"),
         # ("meta-llama/Llama-3.1-70B"),
     models = [
-        ("EleutherAI/pythia-160m-deduped"),        
-        ("EleutherAI/pythia-410m-deduped"),
-        ("Qwen/Qwen2.5-0.5B"),
+       #("EleutherAI/pythia-160m-deduped"),        
+        #("EleutherAI/pythia-410m-deduped"),
         ("meta-llama/Llama-3.2-1B"),
         ("EleutherAI/pythia-1b-deduped"),
-        ("allenai/OLMo-1B-0724-hf", ["main", "step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B"]),
+        #("allenai/OLMo-1B-0724-hf", ["main", "step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B"]),
         ("google/gemma-2-2b"),
         ("EleutherAI/pythia-1.4b-deduped"),
-        ("Qwen/Qwen2.5-1.5B"),
-        ("Qwen/Qwen2.5-3B"),
         ("meta-llama/Llama-3.2-3B"),
-        ("google/gemma-2-9b"),
         ("EleutherAI/pythia-2.8b-deduped"),
         ("EleutherAI/pythia-6.9b-deduped"),
+        ("google/gemma-2-9b"),
+        ("Qwen/Qwen2.5-0.5B"),
+        ("Qwen/Qwen2.5-1.5B"),
+        ("Qwen/Qwen2.5-3B"),
         ("Qwen/Qwen2.5-7B"),
         ("allenai/OLMo-7B-0724-hf", ["main", "step2500-tokens10B", "step24000-tokens100B", "step239000-tokens1002B", "step477000-tokens2000B"]),
         ("EleutherAI/pythia-12b-deduped"),
         ("Qwen/Qwen2.5-14B"),
     ]
 
-    beam_config = "num_beams=4,no_repeat_ngram_size=2,early_stopping=True,top_k=50,top_p=0.9"
+    beam_config = "num_beams=4,no_repeat_ngram_size=2,early_stopping=True,top_k=50,top_p=0.9,temperature=0.7,do_sample=True"
 
     tasks = ["mmlu", "hellaswag", "xwinograd", "winogrande", 
                 "truthfulqa_mc1", "arc_challenge", "gsm8k"]
@@ -134,6 +134,10 @@ def main():
     for opt in args.optimization:
         if opt=="beam":
             gen_config = beam_config
+            task_manager = TaskManager("INFO", include_path="/home/ubuntu/obs-scaling-inference-opts/config/cot/")
+            #tasks = ["mmlu", "hellaswag", "xwinograd", "winogrande", 
+               # "truthfulqa_mc1", "arc_challenge", "gsm8k"] #CHANGE
+            tasks = ["hellaswag_generate", "arc_challenge_generate", "truthfulqa_generative", "xwinograd_generate", "winogrande_generate", "gsm8k", "mmlu_generative"] 
         elif opt=="sc":
             #self consistency with chain of thought
             task_manager = TaskManager("INFO", include_path=None) #CHANGE
@@ -183,7 +187,7 @@ def main():
                     new_results["groups"] = results["groups"]
                     new_results["group_subtasks"] = results["group_subtasks"]
                     model_string = model.split("/")[1]
-                    with open(f"results/{model_string}.json", 'w') as f:
+                    with open(f"cot_results/{model_string}.json", 'w') as f:
                         json.dump(new_results, f)
 
                 print(
@@ -227,7 +231,7 @@ def main():
                         new_results["groups"] = results["groups"]
                         new_results["group_subtasks"] = results["group_subtasks"]
                         model_string = model.split("/")[1]
-                        with open(f"results/{model_string}_{revision}.json", 'w') as f:
+                        with open(f"cot_results/{model_string}_{revision}.json", 'w') as f:
                             json.dump(new_results, f)
 
                     print(

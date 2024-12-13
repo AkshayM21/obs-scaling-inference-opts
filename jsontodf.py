@@ -72,7 +72,7 @@ def process_results_files(directory: str) -> pd.DataFrame:
 # Example usage
 if __name__ == "__main__":
     # Replace with your directory path
-    results_dir = "results/"
+    results_dir = "beam_results/"
     df = process_results_files(results_dir)
-    df.to_csv("intermediate_results.csv")
+    df.to_csv("beam_results.csv")
     print(df.head())
