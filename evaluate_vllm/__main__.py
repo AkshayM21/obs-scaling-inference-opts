@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 import argparse
 from typing import Optional, Literal
+import os
 
 def parse_args():
     """
@@ -63,7 +64,7 @@ def parse_args():
 #     --batch_size auto
 def main():
     args = parse_args()
-
+    os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:1024,expandable_segments:True'
     print(f"Selected optimization method: {args.optimization}")
 
     if args.optimization!=None and ',' in args.optimization:
@@ -125,18 +126,18 @@ def main():
         # ("EleutherAI/pythia-1b-deduped", 1, 4),
         # ("allenai/OLMo-1B-0724-hf", ["main", "step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B"], 1, 4),
         ("google/gemma-2-2b", 1, 4),
-        ("EleutherAI/pythia-1.4b-deduped", 1, 4),
+        #("EleutherAI/pythia-1.4b-deduped", 1, 4),
         ("meta-llama/Llama-3.2-3B", 1, 4),
         ("EleutherAI/pythia-2.8b-deduped", 1, 4),
         ("EleutherAI/pythia-6.9b-deduped", 2, 2),
         ("google/gemma-2-9b", 2, 2),
-        ("Qwen/Qwen2.5-0.5B", 1, 4),
-        ("Qwen/Qwen2.5-1.5B", 1, 4),
-        ("Qwen/Qwen2.5-3B", 1, 4),
-        ("Qwen/Qwen2.5-7B", 2, 2),
+        # ("Qwen/Qwen2.5-0.5B", 1, 4),
+        # ("Qwen/Qwen2.5-1.5B", 1, 4),
+        # ("Qwen/Qwen2.5-3B", 1, 4),
+        # ("Qwen/Qwen2.5-7B", 2, 2),
         ("allenai/OLMo-7B-0724-hf", ["main", "step2500-tokens10B", "step24000-tokens100B", "step239000-tokens1002B", "step477000-tokens2000B"], 2, 2),
-        ("EleutherAI/pythia-12b-deduped", 2, 2),
-        ("Qwen/Qwen2.5-14B", 2, 2),
+        ("EleutherAI/pythia-12b-deduped", 4, 1),
+        #("Qwen/Qwen2.5-14B", 4, 1),
         ("meta-llama/Llama-3.1-8B", 2, 2),
         ("google/gemma-2-27b", 4, 1),
         ("Qwen/Qwen2.5-32B", 4, 1), 
