@@ -143,8 +143,6 @@ def main():
         ("meta-llama/Llama-3.1-70B", 4, 1),
         ("Qwen/Qwen2.5-72B", 4, 1),  
     ]
-      git config --global user.email "am5747@columbia.edu"
-  git config --global user.name "Akshay Manglik"
 
 
     beam_config = "num_beams=4,no_repeat_ngram_size=2,early_stopping=True,top_k=50,top_p=0.9,temperature=0.7,do_sample=True"
