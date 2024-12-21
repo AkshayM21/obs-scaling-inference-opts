@@ -27,18 +27,18 @@ pip install -r requirements.txt
 ```
 
 ### Running Evaluations
-Basic:
+Specify any optimizations you want, of cot (Chain of Thought), beam (Beam Search) and regular (No Optimizations). Specify sample to save samples of a certain percentage of your runs. 
+
+Run evaluate_vllm instead of evaluate for vLLM optimization.
+
+Sample evaluation:
 ```bash
-python -m evaluate --model hf \
---model_args pretrained=EleutherAI/pythia-1b-deduped \
---tasks mmlu,hellaswag,xwinograd,winogrande,truthfulqa_mc1,arc_challenge,gsm8k
+python -m evaluate_vllm --optimization={cot,beam,regular} --sample=0.05
 ```
-Chain of Thought:
+
+To run on multi-GPU without vLLM, call accelerate:
 ```bash
-python -m evaluate --model hf \
---model_args pretrained=EleutherAI/pythia-1b-deduped \
---tasks hellaswag_cot,arc_challenge_cot,truthfulqa_cot,xwinograd_cot,winogrande_cot,gsm8k_cot_zeroshot,mmlu_flan_cot_zeroshot \
---optimization cot
+accelerate launch --multi_gpu --num_processes={num_processes} --mixed_precision bf16 --dynamo_backend inductor -m evaluate --optimization={regular,beam,cot} 
 ```
 
 ### Analysis
