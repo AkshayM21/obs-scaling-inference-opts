@@ -1,4 +1,4 @@
-# Granular Analysis of LLM Inference Optimizations
+# When to Think Step by Step: Computing the Cost-Performance Trade-offs of Chain-of-Thought Prompting
 A systematic study of chain-of-thought prompting and other inference optimization strategies across model scales and architectures.
 
 ## Overview
