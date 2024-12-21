@@ -48,6 +48,7 @@ python -m analysis.granular_analysis
 ```
 
 ### Project Structure
+```
 obs-scaling-inference-opts/
 ├── evaluate/                 # Core evaluation scripts
 │   └── __main__.py           # Main evaluation logic
