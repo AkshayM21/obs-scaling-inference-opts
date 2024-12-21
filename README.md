@@ -16,7 +16,7 @@ This repository contains code, data, and evaluation scripts for analyzing the co
 ![cot-optimality-regimes](figures/experiment_2/intersecting_lines.png)
 * Code reasoning tasks play an outsized role in previous capability analyses
 
-See our paper for detailed analysis.
+See [our paper](Report.pdf) for detailed analysis.
 
 ## Getting Started:
 ### Installation
