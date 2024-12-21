@@ -41,7 +41,14 @@ def parse_args():
         - mcts: Monte Carlo Tree Search
         """
     )
-    
+    parser.add_argument(
+        '--sample',
+        type=float,
+        default=-1,
+        help="""
+        List percentage of entries to randomly sample from each benchmark for each optimization type.
+        """
+    )
     args = parser.parse_args()
     
     # Convert string 'None' to Python None
@@ -120,29 +127,29 @@ def main():
     #     ("Qwen/Qwen2.5-14B"),
     # ]
     models = [
-        #("EleutherAI/pythia-160m-deduped", 1, 4),        
-        # ("EleutherAI/pythia-410m-deduped", 1, 4),
-        # ("meta-llama/Llama-3.2-1B", 1, 4),
-        # ("EleutherAI/pythia-1b-deduped", 1, 4),
-        # ("allenai/OLMo-1B-0724-hf", ["main", "step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B"], 1, 4),
-        ("google/gemma-2-2b", 1, 4),
-        #("EleutherAI/pythia-1.4b-deduped", 1, 4),
-        ("meta-llama/Llama-3.2-3B", 1, 4),
-        ("EleutherAI/pythia-2.8b-deduped", 1, 4),
-        ("EleutherAI/pythia-6.9b-deduped", 2, 2),
-        ("google/gemma-2-9b", 2, 2),
-        # ("Qwen/Qwen2.5-0.5B", 1, 4),
-        # ("Qwen/Qwen2.5-1.5B", 1, 4),
-        # ("Qwen/Qwen2.5-3B", 1, 4),
-        # ("Qwen/Qwen2.5-7B", 2, 2),
-        ("allenai/OLMo-7B-0724-hf", ["main", "step2500-tokens10B", "step24000-tokens100B", "step239000-tokens1002B", "step477000-tokens2000B"], 2, 2),
-        ("EleutherAI/pythia-12b-deduped", 4, 1),
-        #("Qwen/Qwen2.5-14B", 4, 1),
-        ("meta-llama/Llama-3.1-8B", 2, 2),
-        ("google/gemma-2-27b", 4, 1),
-        ("Qwen/Qwen2.5-32B", 4, 1), 
-        ("meta-llama/Llama-3.1-70B", 4, 1),
-        ("Qwen/Qwen2.5-72B", 4, 1),  
+        #("EleutherAI/pythia-160m-deduped", 1, 4),     
+        #("EleutherAI/pythia-1.4b-deduped", 1, 4),   
+        ("EleutherAI/pythia-410m-deduped", 1, 4),
+        ("meta-llama/Llama-3.2-1B", 1, 4),
+        ("EleutherAI/pythia-1b-deduped", 1, 4),
+        ("allenai/OLMo-1B-0724-hf", ["main", "step5000-tokens10B", "step48000-tokens100B", "step477000-tokens1000B", "step954000-tokens2000B"], 1, 4),
+        # ("google/gemma-2-2b", 1, 4),
+        # ("meta-llama/Llama-3.2-3B", 1, 4),
+        # ("EleutherAI/pythia-2.8b-deduped", 1, 4),
+        # ("EleutherAI/pythia-6.9b-deduped", 2, 2),
+        # ("google/gemma-2-9b", 2, 2),
+        # # ("Qwen/Qwen2.5-0.5B", 1, 4),
+        # # ("Qwen/Qwen2.5-1.5B", 1, 4),
+        # # ("Qwen/Qwen2.5-3B", 1, 4),
+        # # ("Qwen/Qwen2.5-7B", 2, 2),
+        # ("allenai/OLMo-7B-0724-hf", ["main", "step2500-tokens10B", "step24000-tokens100B", "step239000-tokens1002B", "step477000-tokens2000B"], 2, 2),
+        # ("EleutherAI/pythia-12b-deduped", 4, 1),
+        # #("Qwen/Qwen2.5-14B", 4, 1),
+        # ("meta-llama/Llama-3.1-8B", 2, 2),
+        # ("google/gemma-2-27b", 4, 1),
+        # ("Qwen/Qwen2.5-32B", 4, 1), 
+        # ("meta-llama/Llama-3.1-70B", 4, 1),
+        # ("Qwen/Qwen2.5-72B", 4, 1),  
     ]
 
 
@@ -167,7 +174,7 @@ def main():
                 model_args = "dtype=bfloat16,gpu_memory_utilization=0.8"
                 if opt == "beam":
                     gen_config = beam_config
-                    model_args = model_args + ",gen_config_provided=True,prompt_postpend=chain_of_thought," + beam_config
+                    model_args = model_args + ",gen_config_provided=True," + beam_config
                 elif opt == "sc":
                     pass
                 elif opt == "cot":
@@ -182,10 +189,10 @@ def main():
                     batch_size="auto",
                     num_fewshot=None,
                     use_cache=None,
-                    limit=None,
+                    limit=None if args.sample == -1 else args.sample,
                     check_integrity=False,
                     write_out=False,
-                    log_samples=False,
+                    log_samples=(args.sample!=-1),
                     evaluation_tracker=None,
                     system_instruction=None,
                     apply_chat_template=False,
@@ -205,8 +212,14 @@ def main():
                     new_results["results"] = results['results']
                     new_results["groups"] = results["groups"]
                     new_results["group_subtasks"] = results["group_subtasks"]
+                    if args.sample != -1:
+                        new_results["samples"] = results["samples"]
                     model_string = model.split("/")[1]
-                    with open(f"{opt}_results/{model_string}.json", 'w') as f:
+                    if args.sample != -1:
+                        save_string = f"{opt}_results/{model_string}_limit{args.sample}.json"
+                    else:
+                        save_string = f"{opt}_results/{model_string}.json"
+                    with open(save_string, 'w') as f:
                         json.dump(new_results, f)
 
                 print(
@@ -241,10 +254,10 @@ def main():
                         batch_size="auto",
                         num_fewshot=None,
                         use_cache=None,
-                        limit=None,
+                        limit=None if args.sample == -1 else args.sample,
                         check_integrity=False,
                         write_out=False,
-                        log_samples=False,
+                        log_samples=(args.sample!=-1),
                         evaluation_tracker=None,
                         system_instruction=None,
                         apply_chat_template=False,
@@ -264,8 +277,14 @@ def main():
                         new_results["results"] = results['results']
                         new_results["groups"] = results["groups"]
                         new_results["group_subtasks"] = results["group_subtasks"]
+                        if args.sample != -1:
+                            new_results["samples"] = results["samples"]
                         model_string = model.split("/")[1]
-                        with open(f"{opt}_results/{model_string}_{revision}.json", 'w') as f:
+                        if args.sample != -1:
+                            save_string = f"{opt}_results/{model_string}_{revision}_limit{args.sample}.json"
+                        else:
+                            save_string = f"{opt}_results/{model_string}_{revision}.json"
+                        with open(save_string, 'w') as f:
                             json.dump(new_results, f)
 
                     print(
