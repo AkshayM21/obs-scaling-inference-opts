@@ -23,6 +23,7 @@ from lm_eval.utils import (
 )
 import torch
 import gc
+import json
 
 
 try:
@@ -84,6 +85,8 @@ class VLLM_Reasoning(TemplateLM):
             max_length is None or max_model_len is None
         ), "Either max_length or max_model_len may be provided, but not both"
 
+        self.pretrained = pretrained
+        self.revision = revision
         self._max_length = max_model_len if max_model_len is not None else max_length
         self.tensor_parallel_size = int(tensor_parallel_size)
         self.data_parallel_size = int(data_parallel_size)
@@ -111,7 +114,21 @@ class VLLM_Reasoning(TemplateLM):
             print(self.prompt_postpend)
 
         if gen_config_provided:
-            self.generation_params = {'num_beams': kwargs['num_beams'], 'no_repeat_ngram_size': kwargs['no_repeat_ngram_size'], 'early_stopping': kwargs['early_stopping'], 'top_k': kwargs['top_k'], 'top_p': kwargs['top_p'], 'temperature': kwargs['temperature'], 'do_sample': kwargs['do_sample']}
+            # self.generation_params = {'num_beams': kwargs['num_beams'], 
+            #                           'no_repeat_ngram_size': kwargs['no_repeat_ngram_size'], 
+            #                           'early_stopping': kwargs['early_stopping'], 
+            #                           'top_k': kwargs['top_k'], 
+            #                           'top_p': kwargs['top_p'], 
+            #                           'temperature': kwargs['temperature'], 
+            #                           'do_sample': kwargs['do_sample']}
+            self.generation_params = {'best_of': kwargs['num_beams'],  # maps to num_beams for beam search
+                         'n': kwargs['num_beams'],  # set equal to best_of for beam search
+                         'use_beam_search': True,  # replaces do_sample with explicit beam search flag
+                         'early_stopping': kwargs['early_stopping'],
+                         'top_k': kwargs['top_k'],
+                         'top_p': kwargs['top_p'],
+                         'temperature': kwargs['temperature'],
+                         'length_penalty': kwargs.get('length_penalty', 0.7)}
         self.batch_size = (
             "auto"
             if isinstance(batch_size, str) and "auto" in batch_size
@@ -300,7 +317,6 @@ class VLLM_Reasoning(TemplateLM):
         else:
             generation_params = {
                 "until": ["</s>", "\n", "<|im_end|>"],
-                "do_sample": True,
                 "temperature": 0.7,
                 "max_gen_toks": 256
             }
@@ -339,9 +355,54 @@ class VLLM_Reasoning(TemplateLM):
                 finally:
                     self.model.llm_engine.gpu_memory_utilization = original_utilization
         
+        # Create a dictionary to store the results
+        results_dict = {}
+
+        # Loop through requests and responses together
+        for req, response in zip(generate_requests, generated_responses):
+            # Extract metadata from the request
+            task_name, doc_id, repeats = req.metadata
+            
+            # Create a unique key for this result
+            # You can modify this key structure based on your needs
+            result_key = f"{task_name}_{doc_id}_{repeats}"
+            
+            # Store the result with relevant information
+            results_dict[result_key] = {
+                'context': req.arguments[0],  # The input string
+                'generation_params': req.arguments[1],  # The generation parameters
+                'response': response,  # The model's generated response
+                'task_name': task_name,
+                'doc_id': doc_id,
+                'repeats': repeats,
+                'index': req.idx
+            }
+
+        if self.prompt_postpend!=None:
+            #cot
+            folder_name = "samples/cot/"
+        else:
+            folder_name = "samples/regular/"
+        if self.revision!= None:
+            filename = self.pretrained.split("/")[-1]+"_"+self.revision+".json"
+        else:
+            filename = self.pretrained.split("/")[-1]+".json"
+
+        # Save the dictionary to a JSON file
+        try:
+            with open(folder_name+filename, 'w') as f:
+                json.dump(results_dict, f, indent=4)
+            print(f"Results successfully saved to {filename}")
+        except Exception as e:
+            print(f"Error saving results: {e}")
+
+        del results_dict
+        
         # Clear memory after generation phase
         torch.cuda.empty_cache()
         gc.collect()
+
+
     
         
         # Create augmented requests
@@ -437,14 +498,13 @@ class VLLM_Reasoning(TemplateLM):
         #check if self has attribute "generation_params"
         if hasattr(self, 'generation_params'):
             generation_params = self.generation_params
-            generation_params["until"] = ["</s>", "\n", "<|im_end|>"]
-            generation_params["max_gen_toks"] = 512
+            generation_params["stop"] = ["</s>", "\n", "<|im_end|>"]
+            generation_params["max_gen_toks"] = 256
         else:
             generation_params = {
-                "until": ["</s>", "\n", "<|im_end|>"],
-                "do_sample": True,
+                "stop": ["</s>","\n", "<|im_end|>"],
                 "temperature": 0.7,
-                "max_gen_toks": 512
+                "max_gen_toks": 256
             }
         
         # Create generate_until requests
