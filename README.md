@@ -47,6 +47,30 @@ Scripts to analyze results and generate plots are in the `/analysis` subdirector
 python -m analysis.granular_analysis
 ```
 
+### Project Structure
+obs-scaling-inference-opts/
+├── evaluate/                 # Core evaluation scripts
+│   └── __main__.py           # Main evaluation logic
+├── evaluate_test/            # Test evaluation scripts
+│   └── __main__.py           # Test evaluation logic
+├── evaluate_vllm/            # vLLM-specific evaluation
+│   └── __main__.py           # vLLM evaluation logic
+├── analysis/                 # Analysis scripts
+│   ├── benchmark.py          # Basic benchmark analysis
+│   ├── cost.py               # Cost profiling
+│   └── granular_analysis.py  # Main inference optimization analysis
+├── config/                   # Configuration files for lm-eval-harness
+│   └── cot/                  # Chain of thought prompts
+├── results/                  # Results storage
+│   ├── toks_generated.csv    # Token generation data
+│   └── train_equivalent_flops.csv
+├── samples/                  # Model output samples
+│   ├── cot/                  # Chain of thought samples
+│   └── regular/              # Standard samples
+├── requirements.txt          # Project dependencies
+└── README.md                 # Project documentation
+```
+
 ## Authors
 
 * Akshay Manglik - Columbia University
