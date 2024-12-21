@@ -47,17 +47,6 @@ Scripts to analyze results and generate plots are in the `/analysis` subdirector
 python -m analysis.granular_analysis
 ```
 
-## Citation
-If you use this code in your research, please cite:
-```
-@article{manglik2024granular,
-  title={Granular Analysis of LLM Inference Optimizations},
-  author={Manglik, Akshay and Choudhri, Aman},
-  journal={arXiv preprint arXiv:2401.05618},
-  year={2024}
-}
-```
-
 ## Authors
 
 * Akshay Manglik - Columbia University
