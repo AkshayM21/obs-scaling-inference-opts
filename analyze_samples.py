@@ -84,6 +84,32 @@ def analyze_model_outputs():
                     'type': 'per_model_eval'
                 })
     
+    # Overall per model ratios (new section)
+    for model in results['cot'].keys():
+        cot_words = []
+        cot_tokens = []
+        reg_words = []
+        reg_tokens = []
+        
+        for task in results['cot'][model].keys():
+            if task in results['regular'][model]:
+                cot_words.append(results['cot'][model][task]['avg_words'])
+                cot_tokens.append(results['cot'][model][task]['avg_tokens'])
+                reg_words.append(results['regular'][model][task]['avg_words'])
+                reg_tokens.append(results['regular'][model][task]['avg_tokens'])
+        
+        if cot_words and reg_words:
+            word_ratio = np.mean(cot_words) / np.mean(reg_words)
+            token_ratio = np.mean(cot_tokens) / np.mean(reg_tokens)
+            
+            csv_data.append({
+                'model': model,
+                'task': 'ALL',
+                'word_ratio': word_ratio,
+                'token_ratio': token_ratio,
+                'type': 'per_model'
+            })
+    
     # Per eval overall ratios
     for task in set().union(*[results['cot'][model].keys() for model in results['cot']]):
         cot_words = []
