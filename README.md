@@ -60,8 +60,8 @@ If you use this code in your research, please cite:
 
 ## Authors
 
-Akshay Manglik - Columbia University
-Aman Choudhri - Columbia University
+* Akshay Manglik - Columbia University
+* Aman Choudhri - Columbia University
 
 ## Acknowledgements
 Thanks to Nikhil Sardana and Jacob Portes of Mosaic Research for guidance on language model evaluation and inference-aware scaling laws.
