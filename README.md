@@ -10,14 +10,13 @@ This repository contains code, data, and evaluation scripts for analyzing the co
 
 ## Key Findings:
 
-* Chain-of-thought benefits emerge differently when scaling model size vs training data
+* Chain-of-thought benefits emerge differently when scaling model size vs training data.
 ![cot_figure](figures/experiment_2/cot_improvement_by_train_flops.png)
-* Inference-compute scaling for chain of thought models is due to effects of larger model size; for standard models, it is due to use of more inference tokens
+* Inference-compute scaling for chain of thought models is due to effects of larger model size; for standard models, it is due to use of more inference tokens.
 ![isoflops](figures/experiment_2/isoflop.png)
-* For many inference scenarios, CoT is more compute-efficient than training larger models
+* For many inference scenarios, CoT is more compute-efficient than training larger models.
 ![cot-optimality-regimes](figures/experiment_2/intersecting_lines.png)
-* Code reasoning tasks play an outsized role in previous capability analyses
-* Observational Scaling Laws are dependent on benchmark variety and coverage, as opposed to model capability
+* Code reasoning tasks play an outsized role in previous capability analyses: observational Scaling Laws are dependent on benchmark variety and coverage, as opposed to model capability.
 ![manglik-choudhri-pca-loadings](figures/experiment_1/dataset_pc_loadings.png)
 ![ruan-ablated-pca-loadings](figures/ruan_loadings.png)
 
