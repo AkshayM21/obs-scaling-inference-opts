@@ -40,14 +40,6 @@ def parse_args():
         - mcts: Monte Carlo Tree Search
         """
     )
-    parser.add_argument(
-        '--vllm',
-        type=bool,
-        default=False,
-        help="""
-        Use VLLM for optimization
-        """
-    )
 
     args = parser.parse_args()
 
@@ -57,18 +49,7 @@ def parse_args():
 
     return args
 
-#todo
-#write code
-#add models
 
-
-# accelerate launch --multi_gpu \
-#     --num_processes=3 \
-#     --dynamo_backend inductor \
-# 		-m lm_eval --model hf \
-#     --model_args pretrained=EleutherAI/pythia-2.8b,\
-#     --tasks mmlu,hellaswag,xwinograd,winogrande,truthfulqa_mc1,arc_challenge,gsm8k \
-#     --batch_size auto
 def main():
     args = parse_args()
 
@@ -81,29 +62,6 @@ def main():
 
     # Models to evaluate
 
-    # models: Olmo-2 (1B, 7B),
-    #Pythia (160M, 410M, 1B, 1.4B, 2.8B, 6.9B, 12B),
-    #Qwen 2.5 (500M, 1.5B, 3B, 7B, 14B, 32B, 72B)
-    # models = [
-    #     ("EleutherAI/pythia-160m-deduped", ["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("EleutherAI/pythia-410m-deduped", ["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("EleutherAI/pythia-1b-deduped", ["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("EleutherAI/pythia-1.4b-deduped", ["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("EleutherAI/pythia-2.8b-deduped", ["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("EleutherAI/pythia-6.9b-deduped", ["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("EleutherAI/pythia-12b-deduped",["step5000", "step10000", "step15000", "step25000", "step37500", "step50000", "step62500", "step75000", "step100000", "step125000", "step143000"]),
-    #     ("Qwen/Qwen2.5-0.5B"),
-    #     ("Qwen/Qwen2.5-1.5B"),
-    #     ("Qwen/Qwen2.5-3B"),
-    #     ("Qwen/Qwen2.5-7B"),
-    #     ("Qwen/Qwen2.5-14B"),
-    #     ("Qwen/Qwen2.5-32B"),
-    #     ("Qwen/Qwen2.5-72B"),
-    #     ("allenai/OLMo-1B-0724-hf", ["step"]),
-    #     ("allenai/OLMo-7B-0724-hf", [])
-    # ]
-
-    #
         # ("google/gemma-2-27b"),
         # ("Qwen/Qwen2.5-32B"),
         # ("Qwen/Qwen2.5-72B"),
@@ -296,10 +254,6 @@ def main():
                     print(
                         f"{model}, {revision} done"
                     )
-    # # Save results
-    # results_df.to_csv("model_evaluation_results.csv")
-    # print("\nResults Summary:")
-    # print(results_df)
 
 if __name__ == "__main__":
     main()

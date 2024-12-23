@@ -9,6 +9,8 @@ from data import load_experiment
 from train_equivalent import load_train_equivalent_flops
 from scipy.optimize import curve_fit
 
+
+#fits benchmark performances vs inference tokens with isoflop curves (figure 7)
 def isoflop_tokens_vs_performance():
     performance_df = load_experiment(2)
     tokens_df = token_info()
@@ -41,6 +43,7 @@ def isoflop_tokens_vs_performance():
 
     # Add regression lines
     legend_elements = []
+    legend_elements.extend(scatter.get_legend_handles_labels()[0])
     for opt, color in zip(['Standard', 'Chain of Thought'], ['blue', 'green']):   
         df_opt = df[df['Prompting Type'] == opt]
         reg = sns.regplot(
@@ -50,13 +53,14 @@ def isoflop_tokens_vs_performance():
         )
         legend_elements.append(plt.Line2D([0], [0], color=color, linestyle='-',
                                         label=f'{opt} (best fit)'))
-
+        
     # Add fitted isoflop curves
     flop_values = [1e20, 1e21, 1e22]
-    token_range = np.linspace(15, 150, 100)
+    token_range = np.linspace(5, 150, 146)
+    
 
-    standard_colors = ['#ffcccc', '#ff8888', '#ff4444']
-    cot_colors = ['#cccccc', '#888888', '#444444']
+    standard_colors = ['#ff8888', '#ff4444', '#ff0000']
+    cot_colors = ['#888888', '#444444', '#000000']
 
     for i, prompt_type in enumerate(['Standard', 'Chain of Thought']):
         df_prompt = df[df['Prompting Type'] == prompt_type]
@@ -78,9 +82,15 @@ def isoflop_tokens_vs_performance():
             ))
             scores_pred = isoflop_model(X_pred, *popt_prompt)
             line = plt.plot(token_range, scores_pred, '--', color=color, alpha=0.5)[0]
+
+            standard_index = np.abs(scores_pred-0.33).argmin()
             
             # Adjust text label position
-            plt.text(120, scores_pred[-1], f'{flops:.0e}', 
+            if prompt_type == 'Standard':
+                plt.text(X_pred[0][standard_index], 0.33, f'{flops:.0e}', 
+                    color=color, fontsize=8, alpha=0.7)
+            else:
+                plt.text(120, scores_pred[-1], f'{flops:.0e}', 
                     color=color, fontsize=8, alpha=0.7)
             
             if j == 1:  # Middle curve for legend
@@ -88,11 +98,11 @@ def isoflop_tokens_vs_performance():
                     linestyle='--', label=f'{prompt_type} IsoFLOP'))
 
     plt.xscale('log')
-    plt.xlabel('Tokens Generated')
+    plt.xlabel('Inference Tokens Generated (Log Scale)')
     plt.ylabel('Average Benchmark Score')
     
     # Tighter axis limits
-    plt.xlim(15, 150)
+    plt.xlim(5, 150)
     plt.ylim(0.28, 0.35)
     
     # Format x-axis ticks to prevent overlap
@@ -101,10 +111,14 @@ def isoflop_tokens_vs_performance():
     
     # Move legend outside to the right
     plt.legend(handles=legend_elements, loc='center left', 
-              bbox_to_anchor=(0.5, 0.9), frameon=True)
+              bbox_to_anchor=(1, 0.5), frameon=True)
     
     # Adjust layout with more space for legend
     plt.tight_layout()
-    plt.subplots_adjust(right=0.82, top=0.95)
+    plt.subplots_adjust(right=0.7, top=0.95)
 
     plt.show()
+
+
+if __name__=="__main__":
+    isoflop_tokens_vs_performance()

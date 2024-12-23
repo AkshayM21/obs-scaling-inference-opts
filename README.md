@@ -12,18 +12,27 @@ This repository contains code, data, and evaluation scripts for analyzing the co
 
 * Chain-of-thought benefits emerge differently when scaling model size vs training data
 ![cot_figure](figures/experiment_2/cot_improvement_by_train_flops.png)
+* Inference-compute scaling for chain of thought models is due to effects of larger model size; for standard models, it is due to use of more inference tokens
+![isoflops](figures/experiment_2/isoflop.png)
 * For many inference scenarios, CoT is more compute-efficient than training larger models
 ![cot-optimality-regimes](figures/experiment_2/intersecting_lines.png)
 * Code reasoning tasks play an outsized role in previous capability analyses
+* Observational Scaling Laws are dependent on benchmark variety and coverage, as opposed to model capability
+![manglik-choudhri-pca-loadings](figures/experiment_1/dataset_pc_loadings.png)
+![ruan-ablated-pca-loadings](figures/ruan_loadings.png)
 
-See [our paper](Report.pdf) for detailed analysis.
+See [our paper](<When to Think Step By Step - Manglik, Choudhri.pdf>) for detailed analysis.
 
 ## Getting Started:
 ### Installation
 ```bash
-git clone https://github.com/yourusername/obs-scaling-inference-opts.git
+git clone https://github.com/EleutherAI/lm-evaluation-harness.git
+cd lm-evaluation-harness
+pip install -e .
+cd ..
+git clone https://github.com/AkshayM21/obs-scaling-inference-opts.git
 cd obs-scaling-inference-opts
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ### Running Evaluations
@@ -32,6 +41,9 @@ Specify any optimizations you want, of cot (Chain of Thought), beam (Beam Search
 Run evaluate_vllm instead of evaluate for vLLM optimization.
 
 Sample evaluation:
+```bash
+python -m evaluate_test --optimization={cot,beam,regular}
+```
 ```bash
 python -m evaluate_vllm --optimization={cot,beam,regular} --sample=0.05
 ```
@@ -44,22 +56,24 @@ accelerate launch --multi_gpu --num_processes={num_processes} --mixed_precision 
 ### Analysis
 Scripts to analyze results and generate plots are in the `/analysis` subdirectory. Call scripts as:
 ```bash
-python -m analysis.granular_analysis
+python -m analysis/granular_analysis.py
+python -m analysis/isoflop.py
 ```
 
 ### Project Structure
 ```
 obs-scaling-inference-opts/
-├── evaluate/                 # Core evaluation scripts
-│   └── __main__.py           # Main evaluation logic
-├── evaluate_test/            # Test evaluation scripts
-│   └── __main__.py           # Test evaluation logic
+├── evaluate/                 # Deprecated evaluation script
+│   └── __main__.py           
+├── evaluate_test/            # Accelerate-compatible GPU evaluation scripts
+│   └── __main__.py           
 ├── evaluate_vllm/            # vLLM-specific evaluation
 │   └── __main__.py           # vLLM evaluation logic
 ├── analysis/                 # Analysis scripts
 │   ├── benchmark.py          # Basic benchmark analysis
 │   ├── cost.py               # Cost profiling
 │   └── granular_analysis.py  # Main inference optimization analysis
+|   └── isoflop.py            # IsoFLOP inference optimization analysis
 ├── config/                   # Configuration files for lm-eval-harness
 │   └── cot/                  # Chain of thought prompts
 ├── results/                  # Results storage
