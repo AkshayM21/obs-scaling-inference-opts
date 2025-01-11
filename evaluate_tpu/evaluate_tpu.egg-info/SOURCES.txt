@@ -1,0 +1,9 @@
+setup.py
+evaluate_tpu/__init__.py
+evaluate_tpu/__main__.py
+evaluate_tpu.egg-info/PKG-INFO
+evaluate_tpu.egg-info/SOURCES.txt
+evaluate_tpu.egg-info/dependency_links.txt
+evaluate_tpu.egg-info/entry_points.txt
+evaluate_tpu.egg-info/requires.txt
+evaluate_tpu.egg-info/top_level.txt

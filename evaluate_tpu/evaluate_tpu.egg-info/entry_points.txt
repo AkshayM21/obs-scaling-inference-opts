@@ -1,0 +1,3 @@
+[console_scripts]
+evaluate_tpu = evaluate_tpu.__main__:main
+
